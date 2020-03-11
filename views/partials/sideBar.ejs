@@ -1,0 +1,41 @@
+<style>
+	.sidenav {
+		margin-top: 50px;
+		height: 100%;
+		width: 0;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		right: 0;
+		background-color: #e6f7fd;
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 60px;
+	}
+	.menuItems div{
+		padding-left: 25px;
+		font-family: "Source Sans Pro", sans-serif;
+	}
+</style>
+<script>
+	$(document).ready(function() {
+		$("input[name='graphType'][selected]").prop("checked", true).trigger("click");
+	})
+</script>
+
+<div id="sideBar" class="sidenav" >
+	<span class="menuItems">
+		<div class="radio">
+			<label><input type="radio" name="graphType" onclick="changeGraph('difference')" selected>Difference graph</label>
+		</div>
+		<div class="radio">
+			<label><input type="radio" name="graphType" onclick="changeGraph('summary')">Summary graph</label>
+		</div>
+		<div class="radio">
+			<label><input type="radio" name="graphType" onclick="changeGraph('networkTopology')">Network layout</label>
+		</div>
+		<div class="radio">
+			<label><input type="radio" name="graphType" onclick="changeGraph('similarityMatrix')">Similarity Matrix</label>
+		</div>
+	</span>
+</div>

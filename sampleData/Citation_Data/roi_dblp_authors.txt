@@ -1,0 +1,158 @@
+Tobias Isenberg 0001
+Jonathan Woodring
+Daniel Archambault
+Xing Mei
+Paul K. J. Han
+Jeffrey Heer
+Kun Zhou
+Mary A. Rutherford
+Bernhard Kainz
+Tobias Schreck
+Stefan Bruckner
+Joseph V. Hajnal
+Arie E. Kaufman
+Sheelagh Carpendale
+Cagatay Turkay
+Gabriel Mistelbauer
+Han-Wei Shen
+Daisuke Iwai
+Torsten Möller
+Thomas Ertl
+Chao Ma
+Guoning Chen
+David F. A. Lloyd
+Hanspeter Pfister
+Mellisa Damodaram
+Fanny Chevalier
+Wouter Meulemans
+Xiaoru Yuan
+Nan Cao
+Tom Peterka
+Dinesh Manocha
+Gennady L. Andrienko
+Hendrik Strobelt
+Andrew Robb
+Alice Davidson
+Chi-Wing Fu
+Weiwei Cui
+Jian Chen
+Dongyu Liu
+Bei Wang
+Yuta Itoh
+Martin Eisemann
+Guido Reina
+Jason Dykes
+Hannah Kim
+Andrew Cordar
+Peer-Timo Bremer
+Sukwon Lee
+Dominik Sacha
+Yan Kong
+Bruce H. Thomas
+Niklas Elmqvist
+Jos B. T. M. Roerdink
+Elmar Eisemann
+Wei Chen 0001
+Christian Sandor
+Sung-Hee Kim
+Kosuke Sato
+Bettina Speckmann
+Benjamin Lok
+Alex Endert
+Weiming Dong
+Simon J. Walton
+Xinyue Ye
+Michael Glueck
+Min Chen 0001
+Huamin Qu
+Petra Isenberg
+Alvitta Ottley
+Sarah Goodwin
+Xiaopeng Zhang 0001
+Xiaotong Liu
+Tong-Yee Lee
+Jian Zhao
+Anna Vilanova
+Shixia Liu
+Adam Wendling
+Mira Dontcheva
+Yizhou Yu
+Yanhong Wu
+Michael Sedlmair
+Eric D. Ragan
+Daniel Weiskopf
+Jean-Daniel Fekete
+Gudrun Klinker
+John T. Stasko
+Remco Chang
+Jana Hutter
+Luis Gustavo Nonato
+Marc Streit
+Jaegul Choo
+Silvia Miksch
+Sixiao Yang
+Zhicheng Liu
+Benjamin Bach
+Steffen Koch
+Bernhard Preim
+Dong-Ming Yan
+Aidan Slingsby
+Kai Lawonn
+Michael Krone
+M. Eduard Gröller
+Conglei Shi
+Natalia V. Andrienko
+Amir Alansary
+Florian Heimerl
+Valerio Pascucci
+Thomas Schultz 0001
+Michael Brudno
+Lace M. K. Padilla
+James Baumeister
+Ravish Mehra
+Jing Qin
+David H. Laidlaw
+Harald Piringer
+Casey White
+Kiyoshi Kiyokawa
+Qiaomu Shen
+Ming C. Lin
+Oliver Deussen
+Eugene Zhang
+Shi-Min Hu
+Jo Wood
+Nathalie Henry Riche
+Sarah H. Creem-Regehr
+Shigeo Takahashi
+Azam Khan
+Markus H. Gross
+Daniel A. Keim
+Marcel Hlawatsch
+Yong-Jin Liu
+Ye Zhao
+Aritra Dasgupta
+Kuno Kurzhals
+Aaron Knoll
+Chun-Ming Chen
+Henry Fuchs
+Lisa Story
+Panpan Xu
+Ralph R. Martin
+Yingcai Wu
+Haichao Miao
+Kwan-Liu Ma
+Alexey Karimov
+Cláudio T. Silva
+Tim Dwyer
+Anthony Steed
+Wenping Wang
+Mark Borowsky
+Hamish Carr
+Nam Wook Kim
+Jing Yang
+Bongshin Lee
+Ligang Liu
+Bum Chul Kwon
+Ross T. Smith
+Kim Marriott
+Dieter Schmalstieg

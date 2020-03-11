@@ -1,0 +1,20 @@
+{
+  "name": "timesum",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "python-shell": "^0.4.0",
+    "serve-favicon": "^2.4.5"
+  },
+  "devDependencies": {},
+  "description": ""
+}

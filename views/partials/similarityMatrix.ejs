@@ -1,0 +1,114 @@
+<script>
+var nodeLabels
+var timeLabels
+var tooltipDiv
+var rowSortOrder=false;
+var colSortOrder=false;
+var refreshHeatmapButton;
+
+var colorBuckets = 21;
+var colors = ['rgb(255,245,240)','rgb(254,224,210)','rgb(252,187,161)','rgb(252,146,114)','rgb(251,106,74)','rgb(239,59,44)','rgb(203,24,29)','rgb(165,15,21)','rgb(103,0,13)'];
+
+function initiateHeatmap2(maxTimeSteps) { 
+    console.log(maxTimeSteps);
+  tooltipDiv1 = d3.select("#heatmap2").append("div").attr("id", "heatmapTooltipDiv")
+             .attr("class", "tooltip")
+             .style("opacity", 0);
+
+    var timeSteps = []
+
+    for (j = 0; j < maxTimeSteps; j++) {
+        timeSteps[j] = j
+    }
+
+    var margin = {
+            top: 15,
+            right: 0,
+            bottom: 0,
+            left: 40
+        },
+        widthHeatmap = globalWidth - margin.left - margin.right,
+        heightHeatmap = 840 - margin.top - margin.bottom,
+
+        globalHeatmap2Height = heightHeatmap
+        gridSize2 = Math.floor(widthHeatmap / 210) *1.1
+
+    var legendElementWidth = gridSize2 * 0.9;
+
+    heatmapSvg1 = d3.select("#heatmap2").append("svg")
+        .attr("width", widthHeatmap + margin.left + margin.right)
+        .attr("height", globalHeatmap2Height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scale.linear().domain([1, maxTimeSteps]).range([0, widthHeatmap])
+
+    timeLabels1 = heatmapSvg1.selectAll(".timeLabel1")
+        .data(timeSteps)
+        .enter().append("text")
+        .text(function(d) { return d; })
+        .attr("x", 0)
+        .attr("y", function(d, i) {
+            return i * gridSize2;
+        })
+        .style("text-anchor", "end")
+        .attr("font-size", 9)
+        .attr("transform", "translate(-6," + gridSize2 / 1.5 + ")")
+        .attr("class", function (d,i) { return "rowLabel mono r"+i;} ) 
+        .style("cursor", "pointer")
+
+    timeLabels2 = heatmapSvg1.selectAll(".timeLabel2")
+        .data(timeSteps)
+        .enter().append("text")
+        .text(function(d) {
+                return d;
+        })
+        .attr("x", function(d, i) {
+            return i * gridSize2;
+        })
+        .attr("y", 0)
+        .attr("border-right", "1px solid black")
+        .style("text-anchor", "middle")
+        .attr("font-size", 9)
+        .attr("transform", "translate(" + gridSize2 / 2 + ", -6)")
+        .attr("class",  function (d,i) { return "colLabel mono c"+i;} )
+        .style("cursor", "pointer");
+
+    return gridSize2
+}
+    
+    function heatmapChartRun(colorAssignments) {
+
+        var heatmapChart2 = function(colorAssignments) {
+            var cells = heatmapSvg1.selectAll(".celg1")
+                .data(colorAssignments, function(d) { return d[0] + ':' + d[1];});
+
+            var colorScale = d3.scale.quantile()
+              .domain([0, colorBuckets - 1, d3.max(colorAssignments, function (d) { return d[2]; })])
+              .range(colors);
+
+            cells.append("title");
+
+            cells.enter().append("rect")
+              .style("cursor", "pointer")
+                .attr("x", function(d) { return (d[1]) * gridSize2; })
+                .attr("y", function(d) { return (d[0]) * gridSize2;})
+                .attr("width", gridSize2)
+                .attr("height", gridSize2)
+                .attr("class", function(d){return "celg";})
+                .style("fill", function(d) { return colorScale(d[2]); });
+
+            // cells.transition().duration(1000)
+            //     .style("fill", function(d) { return d[2] })
+
+            cells.select("title").text(function(d) { return d[2]; });
+
+            cells.exit().remove();
+        };
+
+    heatmapChart2(colorAssignments);
+}
+    initiateHeatmap2(<%= maxTimeSteps %>)
+    heatmapChartRun(distanceMatrixAssignment)
+</script>
+

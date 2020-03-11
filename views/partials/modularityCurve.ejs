@@ -1,0 +1,106 @@
+<style>
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+</style>
+
+<script>
+function modularityCurve(data, metric) {
+    widthModularity = 0
+    $("#heatmap2").html("")
+    heightMOdularity = 120
+
+    var margin1 = {top: 50, right: 0, bottom: 10, left: 30},
+                  margin2 = {top: 0, right: 0, bottom: 0, left: 30 },
+                  widthModularity = globalWidth - margin1.left - margin1.right -220,
+                  heightModularity = heightMOdularity - margin1.top - margin1.bottom;
+
+
+    var x = d3.scale.linear().domain([0, data.length]).range([0, widthModularity]),
+        x2 = d3.scale.linear().domain([0, data.length]).range([0, widthModularity]),
+        y = d3.scale.linear().range([heightModularity, 0]),
+        y2 = d3.scale.linear().range([heightModularity, 0]);
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom"),
+        xAxis2 = d3.svg.axis().scale(x2).orient("bottom").ticks(50),
+        yAxis = d3.svg.axis().scale(y).orient("left").orient("left").ticks(5);
+
+        var line = d3.svg.line()
+                    .x(function(d) { return x2(d[0]); })
+                    .y(function(d) { return y2(d[1]); });
+
+        var svgModularity = d3.select("#heatmap2")
+                .attr("width", widthModularity + margin1.left + margin1.right)
+                .attr("height", heightModularity + margin1.top + margin1.bottom)
+
+          svgModularity.append("defs").append("clipPath")
+              .attr("id", "clip2")
+            .append("rect")
+              .attr("width", widthModularity+20)
+              .attr("height", heightModularity);
+
+          var contextModularity = svgModularity.append("g")
+              .attr("class", "context1")
+              .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+        var appendData = function(data) {
+            x.domain(d3.extent(data, function(d) { return d[0]; }));
+            y.domain([0, d3.max(data, function(d) { return d[1]; })]);
+            x2.domain(x.domain());
+            y2.domain(y.domain());
+
+            // x.domain(d3.extent(data, function(d) { return d[0]; }));
+            // y.domain(d3.extent(data, function(d) { return d[1]; }));
+
+            contextModularity.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("svg")
+            .append("text")
+                .attr("fill", "#000")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 1)
+                .attr("dy", "0.71em")
+                .attr("text-anchor", "end")
+                .text(String(metric));
+
+
+            // Add the X Axis
+            contextModularity.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + (heightModularity+7) + ")")
+                .call(xAxis2);
+
+            contextModularity.append("path")
+                .attr("class", "line")
+                .attr("fill", "none")
+                .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
+                .attr("stroke", "steelblue")
+                .attr("stroke-linejoin", "round")
+                .attr("stroke-linecap", "round")
+                .attr("stroke-width", 4)
+                .attr("d", line(data));
+
+                //   .attr("class", "x brush1")
+                // .selectAll("rect")
+                //   .attr("y", -7)
+                //   .attr("height", heightModularity + 9);
+    }
+      
+    appendData(graphTemporalMetric);
+}	
+
+modularityCurve(graphTemporalMetric, "Modularity")
+</script>

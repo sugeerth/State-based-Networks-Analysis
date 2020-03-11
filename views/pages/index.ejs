@@ -1,0 +1,157 @@
+<html>
+	<head>
+		<title>TimeSum</title>
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<% include ../partials/head %>
+		<style>
+			.paddedPanel {
+				padding-top: 60px;
+				padding-bottom: 60px;
+			}
+			.panel-custom {
+				box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.3);
+			}
+		</style>
+		<script>
+			var brainDataNetwork = <%- brainDataNetwork %>
+			var differenceData = <%- differenceData %>
+			var summaryData = <%- summaryData %>
+			var states = <%- states %>
+			var maxTimeSteps = <%- maxTimeSteps %>
+			var labels = <%- labels %>
+			var distanceMatrixAssignment = []
+			var heatmapSvg1 = []
+			var graphTemporalMetric = []
+
+			var globalWidth = 2000
+			var currentThresholdValue = 0.0
+
+			var NLayoutcolors = ['rgb(254,217,118)','rgb(254,178,76)','rgb(253,141,60)','rgb(252,78,42)','rgb(227,26,28)','rgb(189,0,38)','rgb(128,0,38)'];
+
+			for (i = 0; i< maxTimeSteps; i++)
+			{
+				eval('linkedByIndex'+i+'= {};'); 
+			}
+
+			var start, end = 0;
+			
+			j = 1
+			counter = 0; 
+			stateValues = []
+
+			for (j=1; j<Object.keys(states).length+1; j++)
+			{ 
+				interval = []
+				for (i=0; i<Object.keys(states[j-1]).length; i++)
+				{
+					eval('summaryLinkedByIndex'+(j-1)+''+i+'= {};'); 
+					start = states[j-1][i][0]
+					end = states[j-1][i][1]
+					interval[counter] = [start,end]
+					counter = counter + 1
+				} 
+
+				stateValues[j] = interval
+			}
+			var width = 510
+			var height = 530
+  
+  			makeDistanceMatrix()
+			graphTemporalMetric = []
+			var graphSimilarityMetric = []
+
+  			makegraphTemporalMetric(graphTemporalMetric,"modularity")
+  			makegraphTemporalMetric(graphSimilarityMetric,"1-avgSimilarity")
+
+
+			function makeDistanceMatrix() {
+				distanceMatrixAssignment = new Array(<%- maxTimeSteps %>);
+				for (var i = 0; i < <%- maxTimeSteps %>; i++) {
+				  distanceMatrixAssignment[i] = new Array(3);
+				}
+				var counter = 0
+				for(l=0; l< <%-maxTimeSteps %>; l++) {
+					for(k=0; k< <%-maxTimeSteps %>; k++) {
+						var value = brainDataNetwork[l]["distanceValues"][k]
+						distanceMatrixAssignment[counter]=[l,k, value]
+						counter++
+					}
+				}
+			}
+			function makegraphTemporalMetric(input, value) {
+				for(i = 0; i<<%-maxTimeSteps%>; i++) {
+					input[i] = [i,brainDataNetwork[i][String(value)]]
+				}
+			}
+
+			function changeGraph(graphType) {
+				$(".graphs").each(function(index, elem){
+					$(elem).hide()
+				})
+				console.log(graphType)
+				$("."+graphType+"Container").show()
+			}
+		</script>
+
+	</head>
+	<body data-spy="scroll" data-target=".navbar" data-offset="50">
+		<% include ../partials/navBar %>
+		<% include ../partials/sideBar %>
+
+		<div style="padding: 20px; margin-top: 50px" class="container-fluid">
+
+			<div class="similarityMatrixContainer graphs">
+				<span style="padding-left: 10px;"> Distance Matrix </span>
+				<svg id ="heatmap2"> </svg>
+				<svg id ="heatmap3"> </svg>
+				<%- include('../partials/modularityCurve', {'brainDataNetwork': brainDataNetwork, 'maxTimeSteps': maxTimeSteps}); %>
+				<%- include('../partials/similarityCurve', {'brainDataNetwork': brainDataNetwork, 'maxTimeSteps': maxTimeSteps}); %>
+
+			</div>
+
+			<div class="networkTopologyContainer graphs"> 
+				<table>
+					<tr>
+					<% for(var i=0; i < 1; i++) { %>
+					     <td style="width: 200px; border-right: 1px dashed gray"> 
+							<span style="padding-left: 10px;"> Timestep: <%= i %> </span>
+							<%- include('../partials/forceDirectedBundling', {'timeStep': i, "currentThresholdValue": 0}); %>
+						</td>
+					<% } %>
+					</tr>
+				</table>
+			</div>
+
+			<div class="differenceContainer graphs"> 
+				<table>
+					<tr>
+					<% for(var i=0; i < 20; i++) { %>
+					     <td style="width: 200px; border-right: 1px dashed gray"> 
+							<span style="padding-left: 10px;"> Timestep: <%= i %> </span>
+								<%- include('../partials/differenceGraph', {'timeStep': i, "currentThresholdValue": 0}); %>	
+						</td>
+					<% } %>
+					</tr>
+				</table>
+			</div>
+			
+			<div class="summaryContainer graphs"> 
+				<table>
+					<tr>
+						<% for(var i=0; i < 20; i++) { %>
+							<td>
+								<span style="padding-left: 10px;"> Timestep: <%= i %> </span>
+								<%- include('../partials/summaryGraph', {'index': i, "level": 0, "currentThresholdValue": 0}); %>
+							</td>
+						<% } %>
+					</tr>
+				</table>
+			</div>
+
+		</div>
+		
+		<% include ../partials/footer %>
+	</body>
+</html>

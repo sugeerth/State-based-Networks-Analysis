@@ -1,0 +1,414 @@
+<script type="text/javascript" src="/js/d3-ForceEdgeBundling.js"></script>
+<style>
+  .MultNodeDiffq {
+    fill: steelblue;
+    stroke: steelblue;
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .MultNodeDiff3 {
+    fill: steelblue;
+    stroke: steelblue;
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .nodeDiff {
+    fill: black;
+    stroke: black;
+    stroke-width: 0.2;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .Labels
+  {
+    fill: black;
+    stroke: black;
+    stroke-width: 0.5;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .MultNodeDiff2 {
+    fill: steelblue;
+    stroke: steelblue;
+    stroke-width: 1;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .MultNodeDiff .VeryImp {
+    stroke: red;
+  }
+
+  .linkoutline {
+      stroke: white;
+      stroke-width: 4px;
+      fill: none;
+  }
+  .linkDiff1
+  {
+    stroke-width: .3;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;  
+  }
+
+  .linkDiffDilute
+  {
+    fill: black;
+    stroke: black;
+    stroke-width: .2;
+    fill-opacity: 0.2;
+    opacity:0.1;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;    
+  }
+
+  .linkDiff2
+  {
+    stroke-width: .3;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;  
+  }
+
+  .linkDiff3
+  {
+    stroke-width: .2;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;  
+  }
+
+  .linkDiff4
+  {
+    stroke-width: .3;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;  
+  }
+
+  .node .Imp {
+    stroke: red;
+  }
+</style>
+
+<script>
+$( document ).ready(function() {
+
+  $("#differenceGraphDiv<%=timeStep%>").html("");
+  
+   var nodesDiffDynamic<%=timeStep%> = differenceData[<%=timeStep%>]["nodes"];
+   var linksDiffDynamic<%=timeStep%> = differenceData[<%=timeStep%>]["links"];
+
+   var multipleCommunityData<%=timeStep%> = nodesDiffDynamic<%=timeStep%>.filter(function(d){ return ((d.color).length==2);});
+
+  var dataMul = [];
+  var len =multipleCommunityData<%=timeStep%>.length;
+  var i =0; 
+
+
+  var cluster = d3.layout.cluster()
+      .size([height, width])
+      .sort(function(a, b) { return d3.ascending(a.name, b.name); })
+      .value(function(d) { return d.size; });
+    
+  var bundle = d3.layout.bundle();
+
+  while(len--)
+  { 
+    dataMul[i] = [{node:multipleCommunityData<%=timeStep%>[i]["node"],key:1,x:multipleCommunityData<%=timeStep%>[i]["x"],y:multipleCommunityData<%=timeStep%>[i]["y"], timestep:multipleCommunityData<%=timeStep%>[i]["timestep"]-1,name:"previous",color: String(multipleCommunityData<%=timeStep%>[i]["color"][1])},{name:"current",key:1,color: String(multipleCommunityData<%=timeStep%>[i]["color"][0]),x:multipleCommunityData<%=timeStep%>[i]["x"],y:multipleCommunityData<%=timeStep%>[i]["y"]}];
+    i= i+1
+  }
+  
+  var colorBuckets1 = 21;
+
+  redColors = ['rgb(4,90,141)','rgb(5,112,176)','rgb(54,144,192)'];
+
+  var colorScale1 = d3.scale.quantile()
+      .domain([0, colorBuckets1 - 1, d3.max(210)])
+      .range(redColors);
+
+  var nodeWidth = 5;
+  triangleSize = 145; 
+
+  var min_x = Number.MAX_VALUE;
+  var max_x = 0;
+  var min_y = Number.MAX_VALUE;
+  var max_y = 0;
+  nnodes = [];
+  eedges = [];
+
+  for(var i = 0; i < nodesDiffDynamic<%=timeStep%>.length; i++){
+    var key = nodesDiffDynamic<%=timeStep%>[i]["node"];
+    var x   = Number(nodesDiffDynamic<%=timeStep%>[i]["x"]).toFixed(2);
+    var name = nodesDiffDynamic<%=timeStep%>[i]["name"];
+    var y   = Number(nodesDiffDynamic<%=timeStep%>[i]["y"]).toFixed(2);
+    
+    nnodes[key] = {'x':x, 'y':y};
+
+    min_x = Math.min(min_x, nodesDiffDynamic<%=timeStep%>[i]['x']);
+    max_x = Math.max(max_x, nodesDiffDynamic<%=timeStep%>[i]['x']);
+    min_y = Math.min(min_y, nodesDiffDynamic<%=timeStep%>[i]['y']);
+    max_y = Math.max(max_y, nodesDiffDynamic<%=timeStep%>[i]['y']);
+  }
+
+  var new_scale_x = d3.scale.linear().domain([min_x,max_x]).range([10, 790]);
+  var new_scale_y = d3.scale.linear().domain([min_y, max_y]).range([-250, 440]);
+
+  for(var i = 0; i < nnodes.length; i++){
+    nnodes[i].x = new_scale_x(nnodes[i].x);
+    nnodes[i].y = new_scale_y(nnodes[i].y);
+  }
+
+
+  var triangle = d3.svg.symbol()
+            .type("triangle-down")
+            .size(triangleSize);
+
+  function redraw() {
+  svgDiffDynamic<%=timeStep%>.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+      };  
+
+    r = 15;
+
+  var zoom1 = d3.behavior.zoom().on("zoom", redraw);
+  
+  var pie = d3.layout.pie()
+        .value(function(d) { return d.key; })
+          .padAngle(.02);
+
+  var arc = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(10);
+
+  var fbundling = d3.ForceEdgeBundling().nodes(nnodes).edges(linksDiffDynamic<%=timeStep%>);
+
+  var results   = fbundling();
+
+
+  var d3line = d3.svg.line()
+                    .x(function(d){return d.x;})
+                    .y(function(d){return d.y;})
+                    .interpolate("linear");
+
+  var line = d3.svg.line()
+    .interpolate("bundle")
+    .tension(.85)
+    .x(function(d) { return d.y; })
+    .y(function(d) { return d.x; });
+
+  var svgDiffDynamic<%=timeStep%> = d3.select("#differenceGraphDiv<%=timeStep%>").append("svg")
+      .attr("width", width+400)
+      .attr("height", height+370)
+        .attr("transform", "translate(" + 0 + "," + 0 + ")")
+      .append("g")
+        .attr("transform",function(d) {return "translate(" + (55) + "," + (280) + ")"; });
+
+  for(var j = 0; j < results.length; j++){
+
+        svgDiffDynamic<%=timeStep%>.append("path").attr("d", d3line(results[j]))
+          .attr("class","linkDiff")
+          .data(linksDiffDynamic<%=timeStep%>)
+          .style("stroke", "#ff2222")
+          .style("fill", "none")
+            .style("stroke-width", function(d) { return 1; })
+            .style("stroke", function(d) {return colorScale1(linksDiffDynamic<%=timeStep%>["variance"]*10); })
+          .style('stroke-opacity', 1.0) 
+          .append("desc")
+          .attr("source1",  nodesDiffDynamic<%=timeStep%>[linksDiffDynamic<%=timeStep%>[j]["source"]]["node"] )
+          .attr("target1",  nodesDiffDynamic<%=timeStep%>[linksDiffDynamic<%=timeStep%>[j]["target"]]["node"] )
+          .attr("source2",  linksDiffDynamic<%=timeStep%>[j]["source"] )
+          .attr("target2",  linksDiffDynamic<%=timeStep%>[j]["target"] )
+          .attr("linkID",  i );
+            }
+
+          // svgDiffDynamic<%=timeStep%>.selectAll('path').data(results)
+          //                         .attr("class","linkDiff")
+          //                         .enter().append('svg:path')
+          //                         .attr("d", d3line)
+          //                         .style("stroke", "#ff2222")
+          //                         .style("fill", "none")
+          //                         .style("stroke-width", function(d,i) { console.log(d[i], linksDiffDynamic<%=timeStep%>[i]);return 1; })
+          //                         .style("stroke", function(d) {return colorScale1(linksDiffDynamic<%=timeStep%>["variance"]*10); })
+          //                         .style('stroke-opacity',1.0)
+          //                         .append("desc")
+          //                           .attr("source1",  function(d,i) { return linksDiffDynamic<%=timeStep%>[i]["source"] })
+          //                           .attr("target1",  function(d,i) {  return linksDiffDynamic<%=timeStep%>[i]["target"] });
+
+  if (nodesDiffDynamic<%=timeStep%>[0].fixed == "true") {
+     var forceDiffDynamic<%=timeStep%> = d3.layout.force()
+        .size([width, height])
+        .nodes(nodesDiffDynamic<%=timeStep%>)
+        .links(linksDiffDynamic<%=timeStep%>)
+      .linkDistance(30)
+      .on("tick", tick)
+      .start(); 
+          }
+    else{    
+     var forceDiffDynamic<%=timeStep%> = d3.layout.force()
+        .size([width-20, height-70])
+        .nodes(nodesDiffDynamic<%=timeStep%>)
+        .links(linksDiffDynamic<%=timeStep%>)
+      .linkDistance(30)
+      .on("tick", tick)
+      .start();
+    }
+
+    linksDiffDynamic<%=timeStep%>.forEach(function(d) {
+      linkedByIndex<%=timeStep%>[d.source.node + "," + d.target.node] = 1;
+      linkedByIndex<%=timeStep%>[d.target.node + "," + d.source.node] = 1;
+    });
+
+   // var linksDiffDynamic<%=timeStep%> = svgDiffDynamic<%=timeStep%>.selectAll(".link")
+   //    .data(results)
+   //    .enter().append("line")
+   //    .attr("class", "linkDiff")
+   //    .style("stroke-dasharray", function(d){if (d.signed == 1){return (20,10,5,5,5,10);}else{return (1,0);} })
+   //    .style("stroke", function(d) { if (d.signed == 1){return "steelblue";} else{return "LightCoral";} return "LightCoral "})
+   //    .style("stroke-width", function(d) { return 5; });
+
+
+  var MultNodeSvg<%=timeStep%> = svgDiffDynamic<%=timeStep%>.selectAll(".MultNodeDiffq")
+      .data(dataMul)
+            .enter()
+              .append("g")
+                .attr("class","MultNodeDiffq")
+                .attr("transform",function(d) {return "translate(" + (d[0].x-5) + "," + (d[0].y) + ")"; })
+                .append("path")
+          .attr("transform", function(d) { return "rotate(90)"; })
+          .attr("d", triangle)
+            .style("fill", function(d) { return d[1].color; });
+
+  var MultNodeSvg2<%=timeStep%> = svgDiffDynamic<%=timeStep%>.selectAll(".MultNodeDiff3")
+      .data(dataMul)
+            .enter()
+              .append("g")
+                .attr("class","MultNodeDiff3")
+                .attr("transform",function(d) {return "translate(" + (Number(d[0].x)+10) + "," + (d[0].y) + ")"; })
+                .append("path")
+          .attr("transform", function(d) { return "rotate(-90)"; })
+          .attr("d", triangle)
+            .style("fill", function(d) { return d[0].color; });
+
+   nodesDiffDynamic<%=timeStep%> = nodesDiffDynamic<%=timeStep%>.filter(function(d) {return !(d.opacityValue==0.2); })
+  
+   var nodesDiffDynamic<%=timeStep%> = svgDiffDynamic<%=timeStep%>.selectAll(".node")
+      .data(nodesDiffDynamic<%=timeStep%>)
+      .enter().append("g")
+      .attr("class", "nodeDiff")
+      .attr("id", function(d,i) {return String(d.node+","+i)});
+
+     nodesDiffDynamic<%=timeStep%>.append("circle")
+      .style("fill", function(d) {if ((d.color).length==2){return "rgba(0, 0, 0, 0)";} return d.color; })
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout)
+      .attr("r", function(d)  {return 2 + 3 *(d.opacityValue); })
+      .attr("fill-opacity", function(d)  { if (d.opacityValue==0.2){return 0.0;} return 1; });
+
+  nodesDiffDynamic<%=timeStep%>.append("text")
+      .attr("class","Labels")
+      .attr("dy", ".31em")
+      .attr("x", function(d) { return -6; })
+      .text(function(d,i) { return "" ; })
+    .style("fill", "black")
+    .attr("transform", function(d,i) {
+        if (Number(d.x < 49))
+        {
+            return "translate(" + (3) + "," + (0) + ")";
+        }
+        else if (Number(d.x > 125))
+        {
+            return "translate(" + (3) + "," + (0) + ")";
+        } else if (Number(d.y > 189))
+        {
+            return "translate(" + (3) + "," + (0) + ")";
+        } else 
+        {
+            return "translate(" + (3) + "," + (0) + ")";
+        } })  
+     .style("font-size", function(d) {if (d.color.length == 2) { return 10;}  else{return 10;} });
+
+  a1 = nodesDiffDynamic<%=timeStep%>.filter(function(d) {return (d.color).length==2; })
+        .style("stroke-width", function(d) { return 0; })
+      .attr("class", "nodesDiff4");
+
+  // a = linksDiffDynamic<%=timeStep%>.filter(function(d) {return d.source.color.length == 2 && d.target.color.length == 2; })
+  //       .style("stroke-width", function(d) { return 4; })
+  //     .attr("class", "linkDiff1");
+
+  //   nodesDiff2 = [];
+
+  // b = linksDiffDynamic<%=timeStep%>.filter(function(d) {return d.source.color.length == 2 || d.target.color.length == 2; })
+  //       .style("stroke-width", function(d) { return 4; })
+  //     .attr("class", function(d) { if(d.source.color.length == 2){ nodesDiff2.push(d.target.index) }else{nodesDiff2.push(d.source.index);}  return "linkDiff2";});
+
+  // d = linksDiffDynamic<%=timeStep%>.filter(function(d) {if (d.source.color.length == 2 || d.target.color.length ==2) return false; return !(d.source.color == d.target.color); })
+  //       .style("stroke-width", function(d) { return 2; })
+  //     .attr("class", "linkDiff3");
+
+  // c = linksDiffDynamic<%=timeStep%>.filter(function(d) {return (d.source.color == d.target.color); })
+  //       .style("stroke-width", function(d) { return 1.5; })
+  //     .attr("class", "linkDiff4");
+
+  //   nodesDiffDynamic<%=timeStep%>.filter(function(d) {value = nodesDiff2.indexOf(d.index) > -1; return value;})
+  //     .attr("class", "MultNodeDiff2");
+
+   forceDiffDynamic<%=timeStep%>.on("end", function() {
+    tick();
+  });
+
+  function mouseover(d) {
+      d3.selectAll(".linkDiff1,.linkDiff2,.linkDiff3,.linkDiff4").transition().duration(500)
+        .style("opacity", function(o) {
+        return o.source.node === d.node || o.target.node === d.node ? 1 : 0.02;
+      });
+      
+      d3.selectAll(".nodeDiff,.MultNodeDiff2,.nodesDiff4,.MultNodeDiff3,.MultNodeDiffq").transition().duration(500)
+        .style("opacity", function(o) { 
+           return neighboring(d, o) ? 1 : 0.02;
+        });
+  }
+
+function neighboring(a, b) {
+    if ((a.length == 2) && (!(b.length == 2)))
+    {
+      return a[0].node == b.node || eval("linkedByIndex"+(b.timestep-1))[a[0].node + "," + b.node];
+    } else if ((b.length == 2) && (!(a.length == 2)))
+    {
+      return a.node == b[0].node || eval("linkedByIndex"+(b[0].timestep))[a.node + "," + b[0].node];
+    } else if ((a.length == 2) && (b.length == 2))
+    {
+      return a[0].node == b[0].node || eval("linkedByIndex"+(b[0].timestep))[a[0].node + "," + b[0].node];
+    }
+    return a.node == b.node || eval("linkedByIndex"+(b.timestep-1))[a.node + "," + b.node];
+}
+
+function mouseout() {
+  d3.selectAll(".linkDiff1,.linkDiff2,.linkDiff3,.linkDiff4").transition().duration(500)
+        .style("opacity", 1);  
+  d3.selectAll(".nodeDiff,.MultNodeDiff2,.nodesDiff4,.MultNodeDiff3,.MultNodeDiffq").transition().duration(500)
+    .style("opacity", 1);
+  } 
+
+  function tick() {
+    if (nodesDiffDynamic<%=timeStep%>[0].fixed == true) {
+    nodesDiffDynamic<%=timeStep%>
+      .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+    }else{
+  
+      // linksDiffDynamic<%=timeStep%>.attr("x1", function(d) { return d.source.x; })
+      // .attr("y1", function(d) { return d.source.y; })
+      // .attr("x2", function(d) { return d.target.x; })
+      // .attr("y2", function(d) { return d.target.y; });
+
+      nodesDiffDynamic<%=timeStep%>.attr("transform", function(d) {return "translate("+d.x+","+d.y+")";}); }
+
+    };
+
+    forceDiffDynamic<%=timeStep%>.start();
+  })
+</script>
+<div id="differenceGraphDiv<%=timeStep%>"></div>
+

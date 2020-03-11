@@ -1,0 +1,183 @@
+<script type="text/javascript" src="/js/d3-ForceEdgeBundling.js"></script>
+
+<style>
+  .node {
+    fill: "#ccc";
+    stroke: "#ccc";
+    stroke-width: .5;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+.nodeHAHA
+{
+    fill: "#ccc";
+    stroke: "#ccc";
+    stroke-width: .5;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+.Labels
+{
+  fill: black;
+  stroke: black;
+  stroke-width: 0.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+</style>
+
+<script>
+$( document ).ready(function() {
+
+	$("#networkLayoutGraphDiv<%= timeStep %>").html("");
+	
+	 var nodesDynamic<%= timeStep %> = brainDataNetwork[<%= timeStep %>]["nodes"];
+	 var linksDynamic<%= timeStep %> = brainDataNetwork[<%= timeStep %>]["links"];
+	
+	var nodeWidth = 10;
+       function redraw(transition) {
+			svgDynamic<%= timeStep %>.attr("transform",
+		    	"translate(" + d3.event.translate + ")"
+				+ " scale(" + d3.event.scale + ")");
+   		}; 
+
+	var defaultLinkStrength = 1;
+	var myLinkStrength = 0.2;
+
+	linkedByIndexNL<%= timeStep %> = [];
+
+	var min_x = Number.MAX_VALUE;
+	var max_x = 0;
+	var min_y = Number.MAX_VALUE;
+	var max_y = 0;
+	nnodes = [];
+	eedges = [];
+
+	for(var i = 0; i < nodesDynamic<%= timeStep %>.length; i++){
+		
+		var key = nodesDynamic<%= timeStep %>[i]["node"];
+		var x   = Number(nodesDynamic<%= timeStep %>[i]["x"]).toFixed(2);
+		var name = nodesDynamic<%= timeStep %>[i]["name"];
+		var y   = Number(nodesDynamic<%= timeStep %>[i]["y"]).toFixed(2);
+		
+		nnodes[key] = {'x':x, 'y':y};
+
+		min_x = Math.min(min_x, nodesDynamic<%= timeStep %>[i]['x']);
+		max_x = Math.max(max_x, nodesDynamic<%= timeStep %>[i]['x']);
+		min_y = Math.min(min_y, nodesDynamic<%= timeStep %>[i]['y']);
+		max_y = Math.max(max_y, nodesDynamic<%= timeStep %>[i]['y']);
+	}
+
+ 	var zoom1 = d3.behavior.zoom().on("zoom", redraw);
+
+	var new_scale_x = d3.scale.linear().domain([min_x,max_x]).range([90.6666, 1050.0]);
+	var new_scale_y = d3.scale.linear().domain([min_y, max_y]).range([50.533, 600.0266]);
+
+	for(var i = 0; i < nnodes.length; i++){
+		nnodes[i].x = new_scale_x(nnodes[i].x);
+		nnodes[i].y = new_scale_y(nnodes[i].y);
+	}
+
+ 	var svgDynamic<%= timeStep %> = d3.select("#networkLayoutGraphDiv<%= timeStep %>").append("svg")
+	    .attr("width", width+700)
+	    .attr("height", height+400)
+    	.append("g")
+  	  	.attr("transform",function(d) {return "translate(" + (-80) + "," + (20) + ")"; });
+
+    var thresholded_dynamic_links<%= timeStep %> = linksDynamic<%= timeStep %>.filter(function(d){ return (d.value > currentThresholdValue);});
+
+  	for(var i = 0; i < thresholded_dynamic_links<%= timeStep %>.length; i++){
+      linkedByIndexNL<%= timeStep %>[thresholded_dynamic_links<%= timeStep %>[i]["source"]["node"] + "," + thresholded_dynamic_links<%= timeStep %>[i]["target"]["node"]] = 1;
+	  	eedges.push({'source':thresholded_dynamic_links<%= timeStep %>[i]["source"], 
+	  		  		 'target':thresholded_dynamic_links<%= timeStep %>[i]["target"]});
+	 }
+
+	 var colorBuckets = 21
+
+    var colorScale = d3.scale.quantile()
+      .domain([0, colorBuckets - 1, d3.max(thresholded_dynamic_links<%= timeStep %>, function (d) { return d["value"]; })])
+      .range(NLayoutcolors);
+
+	var fbundling = d3.ForceEdgeBundling().nodes(nnodes).edges(thresholded_dynamic_links<%= timeStep %>);
+	
+	var results   = fbundling();
+
+
+function mouseout() {
+	  d3.selectAll(".link").transition().duration(500)
+	        .style("opacity", 1);  
+	  d3.selectAll(".nodeHAHA").transition().duration(500)
+	    .style("opacity", 1);
+    } 
+
+	var d3line = d3.svg.line()
+                    .x(function(d){return d.x;})
+                    .y(function(d){return d.y;})
+                    .interpolate("linear");
+
+	for(var i = 0; i < results.length; i++){
+	    svgDynamic<%= timeStep %>.append("path").attr("d", d3line(results[i]))
+	        .attr("class","link")
+	        .style("stroke", "#ff2222")
+	        .style("fill", "none")
+          	.style("stroke-width", function(d) { return thresholded_dynamic_links<%= timeStep %>[i]["value"]*0.5; })
+            .style("stroke", function(d) { return colorScale(thresholded_dynamic_links<%= timeStep %>[i]["value"]); })
+	        .style('stroke-opacity',1.0); }
+
+	var nodeDynamicA<%= timeStep %> = svgDynamic<%= timeStep %>.selectAll('.nodeHAHA')
+       .data(d3.entries(nnodes))
+       .enter().append("g")
+       .attr("class", "nodeHAHA");
+
+   	nodeDynamicA<%= timeStep %>.append('circle')
+      	.on("mouseover", mouseover)
+      	.on("mouseout", mouseout)
+	   .style("fill", function(d,i) { return nodesDynamic<%= timeStep %>[i]["color"]; })
+	   .attr("r", function(d,i)  { return 8+ (nodesDynamic<%= timeStep %>[i]["centrality"]*10); });
+  
+  function mouseover(d) {
+	  console.log(d);
+
+	  console.log();
+      
+      d3.selectAll(".nodeHAHA").transition().duration(500)
+        .style("opacity", function(o) { 
+           return neighboring(d, o) ? 1 : 0.02;
+        });
+  }
+	nodeDynamicA<%= timeStep %>.append("text")
+        .attr("class","Labels1")
+	    .attr("dy", ".31em")
+		.text(function(d,i) { return String(i) })
+	  	.style("font-size", 10)
+	  	.style("fill", "black")
+      	.attr("transform", function(d,i) {
+        if (Number(d.value.x < 49))
+        {
+            return "translate(" + (-3) + "," + (10) + ")";
+        }
+        else if (Number(d.value.x > 125))
+        {
+            return "translate(" + (-15) + "," + (14) + ")";
+        } else if (Number(d.value.y > 189))
+        {
+            return "translate(" + (-15) + "," + (14) + ")";
+        } else 
+        {
+            return "translate(" + (-10) + "," + (-15) + ")";
+        } });
+
+	nodeDynamicA<%= timeStep %>
+		.attr("transform", function(d) {return "translate("+d.value.x+","+d.value.y+")";}); 
+
+function neighboring(a, b) {
+	return eval("linkedByIndexNL"+(<%= timeStep %>))[a.key + "," + b.key] || eval("linkedByIndexNL"+(<%= timeStep %>))[b.key + "," + a.key];
+}
+
+
+	})
+</script>
+<div id="networkLayoutGraphDiv<%= timeStep %>"></div>
+
+
+

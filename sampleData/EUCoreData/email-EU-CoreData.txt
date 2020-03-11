@@ -1,0 +1,58 @@
+3.1.5 Email Network. We also considered an email network from a large
+European research institution. For a period from October 2003 to May 2005
+(18 months), we have anonymized information about all incoming and outgoing
+email of the research institution. For each sent or received email message, we
+know the time, the sender, and the recipient of the email. Overall we have
+3,038,531 emails covering 287,755 different email addresses. Note that we have
+a complete email graph for only 1,258 email addresses that come from the
+research institution. Furthermore, there are 35,756 email addresses that both
+sent and received email within the span of our dataset. All other email addresses
+are either nonexisting, mistyped, or spam.
+Given a set of email messages, we need to create a graph. Since there can
+be multiple emails sent between the same two addresses (nodes), we follow the
+practice of Kossinets and Watts [2006]. Given a set of email messages, each
+node corresponds to an email address. We create an edge between nodes i and
+j if they exchanged messages both ways, that is, i sent at least one message to
+j, and j sent at least one message to i.
+Similar to citation networks, we take all email messages up to a particular
+time t and create a graph using the procedure previously described. So, in the
+first month, we observe 254,080 emails between 38,090 different addresses.
+Using the procedure [Kossinets and Watts 2006] of generating a graph from a
+set of emails, we get n = 6,537 nodes and e = 18,812 edges. After 18 months, at
+the end of the dataset, we have n = 35,756 nodes and e = 123,254 edges.
+Figure 2(e) presents the DPL plot for the email network. Observe a clear
+trend: the email network is densifying regardless of the fact that it is growing
+and that new parts of the social network (email address space) are being
+explored. The densification exponent is a = 1.12, lower than the one for the citation
+networks but more similar to those from affiliation networks. Still clearly
+greater than 1.
+Note that there is one issue with this dataset: we have complete information
+about all sent and received emails only for the core of the network (1,258 email
+addresses from the institution). For the rest of the addresses, the nodes on
+ACM Transactions on Knowledge Discovery from Data, Vol. 1, No. 1, Article 2, Publication date: March 2007.
+Graph Evolution: Densification and Shrinking Diameters • 13
+the periphery, we only have their communication (links) with the core of the
+network.
+Regardless of how we look at the email network, it always densifies. If we
+consider only the core of the network, the densification is very high. This is
+expected since the number of nodes (people at the research institution) basically
+remains constant over time, and the edges can only be added, not deleted, and
+densification naturally occurs.
+The network also densifies if we consider the core plus the periphery, but
+when determining edges, we take a 2-month sliding window [Kossinets and
+Watts 2006]. This means that for every month m, we take all email messages
+between m − 2 and m, and create a graph where there is an edge if nodes
+exchanged emails both ways in the last 2 months. This graph also densifies
+with densification exponent a = 1.21.
+Interestingly, the sliding window email network has a higher densification
+exponent than the full evolving email network. A possible explanation is that
+email usage is increasing over time and not all nodes (email addresses) are
+active at all times. Over the 18 month time period, the size of 2-month sliding
+window graphs increases from 7,000 to 10,000 nodes. On the other hand, the full
+email graph (composed of all nodes up to month m) grows from 3,000 to 38,000
+nodes over the same time period. This means that there is a large number of
+email addresses that are active only for a period of time. In a moving window
+graph, we observe only active users and thus more edges since email usage has
+also increased and people communicate more. As opposed to the evolution of
+the full email network, the moving window graphs do not have to accumulate
+the history, that is, sparse graphs from the past, so they densify faster.

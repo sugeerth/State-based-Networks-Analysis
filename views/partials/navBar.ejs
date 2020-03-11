@@ -1,0 +1,28 @@
+<script>
+	$(document).ready(function(){
+		$("#appLogo").attr("src", getUrl()+"/images/timesum.png")
+	})
+
+	function openCloseNav() {
+		var sideNav = document.getElementById("sideBar")
+		if(sideNav.style.width == "250px") 
+			sideNav.style.width = "0px"
+		else 
+			sideNav.style.width = "250px"
+	}
+
+</script>
+
+
+<nav class="navbar navbar-inverse navbar-fixed-top" style="background: #074e68;">
+	<div class="container-fluid" style="padding-top: 10px">
+		<div class="navbar-header">
+			<img id="appLogo" style="height: 40px;"/>
+			<span style="font-size:21px; color: white;">TimeSum </span>
+		</div>
+		<div style="float: right">
+			<span style="cursor:pointer; font-size: 25px; color: white" onclick="openCloseNav()">&#9776;</span>
+		</div>
+	</div>
+</nav>    
+

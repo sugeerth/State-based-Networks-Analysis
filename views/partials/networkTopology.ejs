@@ -1,0 +1,62 @@
+<html>
+<head>
+<script>
+	$( document ).ready(function() {
+	var linkDistance = 5
+
+	 var nodes<%=timeStep%> = brainDataNetwork[<%= timeStep %>]['nodes'] %>
+	 var links<%=timeStep%> = brainDataNetwork[<%= timeStep %>]['links'] %>
+
+	 var canvas<%=timeStep%> = d3.select("#networkTopologyGraphDiv<%=timeStep%>").append("canvas").attr("width", width).attr("height", height).attr("viewBox", "0 0 " + width + " " + height ).attr("preserveAspectRatio", "xMinYMin");
+    
+    var context<%=timeStep%> = canvas<%=timeStep%>.node().getContext("2d");
+  	links<%=timeStep%>.forEach(function(d,i){ d.i = i; });
+
+     var thresholded_links<%=timeStep%> = links<%=timeStep%>.filter(function(d){ return (d.value > <%= currentThresholdValue %>);});
+
+	 var force<%=timeStep%> = d3.layout.force()
+	    .size([width, height])
+	    .nodes(nodes<%=timeStep%>)
+	    .links(thresholded_links<%=timeStep%>)
+	    .on("tick", tick)
+	    .linkDistance(linkDistance)
+	    .start();
+  
+
+  	 function tick() {
+	    context<%=timeStep%>.clearRect(0, 0, width, height);
+	
+	    context<%=timeStep%>.strokeStyle = "#ccc";
+	    context<%=timeStep%>.beginPath();
+	    thresholded_links<%=timeStep%>.forEach(function(d) {
+	    	
+	      context<%=timeStep%>.moveTo(d.source.x, d.source.y);
+	      context<%=timeStep%>.lineTo(d.target.x, d.target.y);
+	    });
+	    context<%=timeStep%>.stroke();
+	
+	   
+	    context<%=timeStep%>.beginPath();
+	    nodes<%=timeStep%>.forEach(function(d) {
+	      context<%=timeStep%>.fillStyle = "black";
+
+		  context<%=timeStep%>.fillText(labels[d.node],d.x+5,d.y);
+	      context<%=timeStep%>.moveTo(d.x, d.y);
+
+
+	      context<%=timeStep%>.beginPath();
+	      context<%=timeStep%>.fillStyle = d.color;
+	      context<%=timeStep%>.arc(d.x, d.y, 10.5, 0, 4 * Math.PI);
+	      context<%=timeStep%>.closePath();
+	      context<%=timeStep%>.fill();
+	    });
+	    
+	  }
+	  
+	  })
+</script>
+</head>
+<body>
+	<div id="networkTopologyGraphDiv<%=timeStep%>"></div>
+</body>
+</html>

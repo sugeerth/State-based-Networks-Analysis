@@ -1,0 +1,123 @@
+rect.bordered {
+        stroke: #E6E6E6;
+        stroke-width:1px;   
+      }
+.area {
+  fill: lightgray;
+  clip-path: url(#clip);
+}
+
+
+.hide{
+  display:none;  
+}
+.container {
+  width: 230em;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+g.arc path {
+  stroke: #828282;
+  stroke-width: 0.5;
+}
+g.arc text {
+  font-size: 10px;
+}
+
+g.arc path {
+  stroke: #828282;
+  stroke-width: 0.5;
+}
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+.cell.hidden {
+  fill: #ccc !important;
+}
+
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+  clip-path: url(#clip);
+}
+
+/*.node {
+  fill: #000;
+  stroke: #fff;
+}
+*/
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+.MultNodeDiff
+{
+  stroke: #fff;
+  fill-opacity: 1;
+
+}
+.x.axis path {
+  display: none;
+}
+
+.brush1 .extent {
+  stroke: #fff;
+  fill-opacity: .225;
+  shape-rendering: crispEdges;
+  clip-path: url(#clip);
+}
+
+.brush2 .extent {
+  stroke: #fff;
+  fill-opacity: .325;
+  shape-rendering: crispEdges;
+  clip-path: url(#clip);
+}
+
+.brushForHeatmap .extent {
+  stroke: #fff;
+  opacity:0.0;
+  fill-opacity: .0;
+  shape-rendering: crispEdges;
+  clip-path: url(#clip);
+}
+
+rect.pane {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
+.tooltip {
+  position: absolute;	
+  text-align: center;	
+  width: 200px;		
+  padding: 4px;	
+  color: white;	
+  background: white;	
+  border: 2px solid gray;					
+  border-radius: 8px;
+ /*  pointer-events: none;	This line needs to be removed */
+	
+}
+.axis text {
+   font-size: 9px;
+}
+#slidebar-white { 
+	padding-bottom: 20px;
+}
+.customLabel {
+	font-weight: normal;
+	cursor: pointer;
+}
